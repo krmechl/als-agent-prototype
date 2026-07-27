@@ -1,1 +1,33 @@
+name: Run ALS Auditor Agent
 
+on:
+  workflow_dispatch: # Allows you to trigger the agent manually via a button click on GitHub
+  schedule:
+    - cron: '0 0 * * *' # Runs automatically once a day in the background
+
+jobs:
+  run-agent-and-publish:
+    runs-allowed: write
+    contents: write
+    run-on: ubuntu-latest
+
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v3
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.10'
+
+    - name: Execute Autonomous Agent Script
+      run: |
+        python agent_ledger.py
+
+    - name: Commit and Push Changes to GitHub Pages
+      run: |
+        git config --global user.name "ALS-Autonomous-Agent"
+        git config --global user.email "agent@alslabs-prototype.local"
+        git add ledger.json index.html
+        git commit -m "🤖 Autonomous Agent Update: Cryptographic Block Added" || echo "No changes to commit"
+        git push
