@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SMB Web3 Login Prototype</title>
+    <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; max-width: 500px; margin: 50px auto; padding: 20px; line-height: 1.6; }
+        .card { border: 1px solid #ccc; padding: 20px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        button { background-color: #4285F4; color: white; border: none; padding: 12px 20px; font-size: 16px; border-radius: 4px; cursor: pointer; width: 100%; font-weight: bold; }
+        button:hover { background-color: #357ae8; }
+        button:disabled { background-color: #ccc; cursor: not-allowed; }
+        .hidden { display: none; }
+        .success { color: green; font-weight: bold; word-break: break-all; }
+        .loader { color: #666; font-style: italic; }
+    </style>
+</head>
+<body>
+
+    <div class="card">
+        <h2>SMB Portal Alpha</h2>
+        <p>Experience an "invisible blockchain" login. Sign in securely using your standard corporate Google account.</p>
+        
+        <!-- Step 1: Login UI -->
+        <div id="loginSection">
+            <button id="loginBtn">Sign in with Google</button>
+        </div>
+
+        <!-- Step 2: Dashboard UI (Hidden until logged in) -->
+        <div id="dashboardSection" class="hidden">
+            <p class="success">🎉 Successfully Connected!</p>
+            <p><strong>Your Automatically Generated Smart Wallet:</strong></p>
+            <p id="walletAddress" style="background: #eee; padding: 10px; border-radius: 4px; font-family: monospace; font-size: 14px;"></p>
+            <p>This wallet lives on the <strong>Polygon Amoy Testnet</strong> and is completely free to use for your SMB testing.</p>
+            <button id="logoutBtn" style="background-color: #d9534f;">Sign Out</button>
+        </div>
+
+        <!-- Feedback Messages -->
+        <p id="statusMsg" class="loader hidden"></p>
+    </div>
+
+    <!-- 1. LOAD THE LOCAL SCRIPT FILE YOU JUST DOWNLOADED -->
+    <script src="thirdweb.js"></script>
+
+    <!-- 2. Execute the login logic using the locally loaded library -->
+    <script>
+        // Check if the script loaded properly from your local folder
+        if (typeof window.Thirdweb === 'undefined') {
+            alert("Error: The local thirdweb.js file was not found in this folder. Double check your file names.");
+        }
+
+        // Deconstruct the required functions directly out of the local Thirdweb object
+        const { createThirdwebClient, inAppWallet } = window.Thirdweb;
+        
+        // Define the Amoy network parameters manually
+        const amoyChain = {
+            id: 80002, 
+            rpc: "https://thirdweb.com"
+        };
+
+        // Initialize the client using your free Thirdweb developer dashboard credentials
+        const client = createThirdwebClient({ 
+            clientId: "team_cmsc71y080135b00lev4dxcgq" 
+        });
+
+        // DOM elements for UI manipulation
+        const loginBtn = document.getElementById("loginBtn");
+        const logoutBtn = document.getElementById("logoutBtn");
+        const loginSection = document.getElementById("loginSection");
+        const dashboardSection = document.getElementById("dashboardSection");
+        const walletAddressText = document.getElementById("walletAddress");
+        const statusMsg = document.getElementById("statusMsg");
+
+        let activeWallet = null;
+
+        // Function to handle Google OAuth authentication
+        async function handleGoogleLogin() {
+            try {
+                // UI feedback
+                loginBtn.disabled = true;
+                statusMsg.innerText = "Opening secure Google login wrapper...";
+                statusMsg.classList.remove("hidden");
+
+                // Configure the background engine to target Google auth
+                activeWallet = inAppWallet({
+                    auth: { strategy: "google" }
+                });
+
+                // Connect the wallet into the active client application
+                const account = await activeWallet.connect({ 
+                    client,
+                    chain: amoyChain 
+                });
+
+                // UI update: Hide login, show dashboard with the unique wallet address
+                loginSection.classList.add("hidden");
+                dashboardSection.classList.remove("hidden");
+                walletAddressText.innerText = account.address;
+                statusMsg.classList.add("hidden");
+
+            } catch (error) {
+                console.error("Login Failed:", error);
+                statusMsg.innerText = "Login failed: " + error.message;
+                loginBtn.disabled = false;
+            }
+        }
+
+        // Function to clear session and reset UI
+        async function handleLogout() {
+            if (activeWallet) {
+                await activeWallet.disconnect();
+            }
+            dashboardSection.classList.add("hidden");
+            loginSection.classList.remove("hidden");
+            loginBtn.disabled = false;
+            statusMsg.classList.add("hidden");
+        }
+
+        // Attach JavaScript logic to the HTML buttons
+        loginBtn.addEventListener("click", handleGoogleLogin);
+        logoutBtn.addEventListener("click", handleLogout);
+    </script>
+</body>
+</html>
