@@ -14,6 +14,16 @@
         .success { color: green; font-weight: bold; word-break: break-all; }
         .loader { color: #666; font-style: italic; }
     </style>
+
+    <!-- The Import Map translates code paths into direct, fully resolved browser bundles -->
+    <script type="importmap">
+      {
+        "imports": {
+          "thirdweb": "https://esm.sh",
+          "thirdweb/wallets": "https://esm.sh/wallets"
+        }
+      }
+    </script>
 </head>
 <body>
 
@@ -39,23 +49,16 @@
         <p id="statusMsg" class="loader hidden"></p>
     </div>
 
-    <!-- 1. LOAD THE LOCAL SCRIPT FILE YOU JUST DOWNLOADED -->
-    <script src="thirdweb.js"></script>
+    <!-- Execute the login logic cleanly via a standard modern browser module script -->
+    <script type="module">
+        // The browser looks at the importmap above and handles these requests seamlessly 
+        import { createThirdwebClient } from "thirdweb";
+        import { inAppWallet } from "thirdweb/wallets";
 
-    <!-- 2. Execute the login logic using the locally loaded library -->
-    <script>
-        // Check if the script loaded properly from your local folder
-        if (typeof window.Thirdweb === 'undefined') {
-            alert("Error: The local thirdweb.js file was not found in this folder. Double check your file names.");
-        }
-
-        // Deconstruct the required functions directly out of the local Thirdweb object
-        const { createThirdwebClient, inAppWallet } = window.Thirdweb;
-        
         // Define the Amoy network parameters manually
         const amoyChain = {
             id: 80002, 
-            rpc: "https://thirdweb.com"
+            rpc: "https://80002.rpc.thirdweb.com"
         };
 
         // Initialize the client using your free Thirdweb developer dashboard credentials
