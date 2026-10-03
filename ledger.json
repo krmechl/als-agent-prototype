@@ -1547,5 +1547,28 @@
         },
         "agent_signature": "AI_AUDITOR_AGENT_v1.0",
         "hash": "e88903c077036f0f8ea745cd3dd9f8d34c9f09d6cb2dd9425df864ef32df31ee"
+    },
+    {
+        "index": 68,
+        "timestamp": "2026-10-03T02:48:09.646114",
+        "previous_hash": "e88903c077036f0f8ea745cd3dd9f8d34c9f09d6cb2dd9425df864ef32df31ee",
+        "data": {
+            "telemetry": {
+                "sample_id": "ALS-ENV-2026-004",
+                "client": "Apex Mining Corp",
+                "site": "Hunter Valley Water Catchment",
+                "test_parameter": "Arsenic (As)",
+                "measured_value_mg_L": 0.008,
+                "cooler_transit_temp_c": 3.4,
+                "timestamp": "2026-10-03T02:48:09.645656"
+            },
+            "agent_audit": {
+                "status": "COMPLIANT_PASSED",
+                "escrow_action": "RELEASE_FUNDS_TO_ALS",
+                "notes": "Sample ALS-ENV-2026-004 passed all physical custody and informational assay limits."
+            }
+        },
+        "agent_signature": "AI_AUDITOR_AGENT_v1.0",
+        "hash": "96f64821fe05b850270f1f0612df568ecdd21cf1c35eb75880ee72084d95cca7"
     }
 ]
